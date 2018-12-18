@@ -41,6 +41,12 @@ defmodule EctoExtensions.Repo do
       def cache_key(%module{id: id, updated_at: updated_at}) do
         [Helpers.Base.to_str(module), id, updated_at |> DateTime.to_string()] |> Enum.join("/")
       end
+
+      def transaction_repeateble_read! do
+        if Mix.env() != :test do
+          Challenge.Repo.query!("set transaction isolation level repeatable read;")
+        end
+      end
     end
   end
 end
