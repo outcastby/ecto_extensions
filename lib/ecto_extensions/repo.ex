@@ -1,4 +1,4 @@
-defmodule EctoExtensions do
+defmodule EctoExtensions.Repo do
   @moduledoc false
 
   defmacro __using__(_) do

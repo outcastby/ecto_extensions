@@ -7,6 +7,7 @@ defmodule EctoExtensions.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
+      package: package(),
       deps: deps()
     ]
   end
@@ -15,6 +16,13 @@ defmodule EctoExtensions.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs", "README*"],
+      links: %{"GitHub" => "https://github.com/outcastby/ecto_extensions"}
     ]
   end
 
