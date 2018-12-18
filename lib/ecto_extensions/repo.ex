@@ -44,7 +44,7 @@ defmodule EctoExtensions.Repo do
 
       def transaction_repeateble_read! do
         if Mix.env() != :test do
-          Challenge.Repo.query!("set transaction isolation level repeatable read;")
+          __MODULE__.query!("set transaction isolation level repeatable read;")
         end
       end
     end
