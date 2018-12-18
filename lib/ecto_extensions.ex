@@ -1,18 +1,46 @@
 defmodule EctoExtensions do
-  @moduledoc """
-  Documentation for EctoExtensions.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
+  defmacro __using__(_) do
+    quote do
 
-  ## Examples
+      import Ecto.Query
 
-      iex> EctoExtensions.hello()
-      :world
+      defoverridable exists?: 2
 
-  """
-  def hello do
-    :world
+      def exists?(queryable, clauses, opts \\ []) do
+        Ecto.Repo.Queryable.exists?(__MODULE__, Ecto.Query.where(queryable, [], ^Enum.to_list(clauses)), opts)
+      end
+
+      def first(query) do
+        query |> Ecto.Query.limit(1) |> one()
+      end
+
+      def where(query, params) do
+        Enum.reduce(params, query, &compose_query/2)
+      end
+
+      defp compose_query({key, value}, query) when is_list(value) do
+        query |> where([entity], field(entity, ^key) in ^value)
+      end
+
+      defp compose_query({key, nil}, query) do
+        query |> where([entity], is_nil(field(entity, ^key)))
+      end
+
+      defp compose_query({key, value}, query) do
+        query |> where([entity], ^[{key, value}])
+      end
+
+      def batch_insert(schema_or_source, entries, batch, opts \\ []) do
+        Enum.each(Enum.chunk_every(entries, batch), &Ecto.Repo.Schema.insert_all(__MODULE__, schema_or_source, &1, opts))
+      end
+
+      def order_by(query, fields), do: from(en in query, order_by: ^fields)
+
+      def cache_key(%module{id: id, updated_at: updated_at}) do
+        [Helpers.Base.to_str(module), id, updated_at |> DateTime.to_string()] |> Enum.join("/")
+      end
+    end
   end
 end
