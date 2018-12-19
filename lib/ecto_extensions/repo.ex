@@ -39,7 +39,7 @@ defmodule EctoExtensions.Repo do
       def order_by(query, fields), do: from(en in query, order_by: ^fields)
 
       def cache_key(%module{id: id, updated_at: updated_at}) do
-        [Helpers.Base.to_str(module), id, updated_at |> DateTime.to_string()] |> Enum.join("/")
+        [Ext.Base.to_str(module), id, updated_at |> DateTime.to_string()] |> Enum.join("/")
       end
 
       def transaction_repeateble_read! do
